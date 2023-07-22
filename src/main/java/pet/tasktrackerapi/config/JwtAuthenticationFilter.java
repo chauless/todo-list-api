@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import pet.tasktrackerapi.service.JwtService;
+import pet.tasktrackerapi.auth.service.JwtService;
 
 import java.io.IOException;
 
