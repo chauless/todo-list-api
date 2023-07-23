@@ -1,16 +1,18 @@
 package pet.tasktrackerapi.api.dto;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Data
+@RequiredArgsConstructor
 public class UserDto implements Serializable {
 
-    private final Long id;
+    private Long id;
 
-    private final String username;
+    private String username;
 
-    private final List<TaskDto> tasks;
+    private List<TaskDto> tasks;
 }

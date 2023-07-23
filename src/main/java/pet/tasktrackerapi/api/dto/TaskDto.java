@@ -3,21 +3,22 @@ package pet.tasktrackerapi.api.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 @Data
+@RequiredArgsConstructor
 public class TaskDto implements Serializable {
 
-    @NotNull
-    private final UUID id;
+    private UUID id;
 
     @NotBlank
-    private final String title;
+    private String title;
 
     @NotNull
-    private final String description;
+    private String details;
 
-    private final Boolean completed;
+    private Boolean completed;
 }

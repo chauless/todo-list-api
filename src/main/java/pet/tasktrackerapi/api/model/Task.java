@@ -1,13 +1,17 @@
 package pet.tasktrackerapi.api.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
-@Data
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class Task {
 
     @Id
@@ -23,6 +27,6 @@ public class Task {
     @Column(name = "completed", nullable = false)
     private Boolean completed;
 
-    @ManyToOne
-    private User owner;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 }
