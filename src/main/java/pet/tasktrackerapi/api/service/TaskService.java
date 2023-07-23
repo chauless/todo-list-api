@@ -58,4 +58,8 @@ public class TaskService {
             throw new NotFoundException("No task with such id");
         }
     }
+
+    public int countNonCompletedTasks(User user) {
+        return taskRepository.countTasksByUserAndCompletedIsFalse(user.getId());
+    }
 }

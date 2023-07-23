@@ -25,20 +25,28 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<UUID> createTask(@AuthenticationPrincipal User user, @RequestBody @Valid TaskDto taskDto) {
+    public ResponseEntity<UUID> createTask(@AuthenticationPrincipal User user,
+                                           @RequestBody @Valid TaskDto taskDto) {
         UUID taskId = taskService.createTask(user, taskDto);
         return ResponseEntity.ok(taskId);
     }
 
     @PutMapping(path = "/{uuid}")
-    public ResponseEntity<UUID> updateTask(@AuthenticationPrincipal User user, @RequestBody @Valid TaskDto taskDto) {
+    public ResponseEntity<UUID> updateTask(@AuthenticationPrincipal User user,
+                                           @RequestBody @Valid TaskDto taskDto) {
         UUID taskId = taskService.updateTask(user, taskDto);
         return ResponseEntity.ok(taskId);
     }
 
     @DeleteMapping(path = "/{uuid}")
-    public ResponseEntity<UUID> deleteTask(@AuthenticationPrincipal User user, @PathVariable UUID uuid) {
+    public ResponseEntity<UUID> deleteTask(@AuthenticationPrincipal User user,
+                                           @PathVariable UUID uuid) {
         taskService.deleteTask(user, uuid);
         return ResponseEntity.ok(uuid);
+    }
+
+    @GetMapping(path = "/non-completed")
+    public ResponseEntity<Integer> countNonCompletedTasks(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(taskService.countNonCompletedTasks(user));
     }
 }
