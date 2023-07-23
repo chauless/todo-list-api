@@ -2,27 +2,22 @@ package pet.tasktrackerapi.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor(force = true)
-@Schema(description = "Information about Task")
-public class TaskDto implements Serializable {
-
-    private UUID id;
+@Schema(description = "Information about new Task")
+public class NewTaskRequest implements Serializable {
 
     @NotBlank
-    private String title;
+    private final String title;
 
     @NotNull
-    private String details;
-
-    private Boolean completed;
+    private final String details;
 }

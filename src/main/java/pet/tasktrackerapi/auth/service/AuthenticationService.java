@@ -10,9 +10,11 @@ import pet.tasktrackerapi.auth.dto.AuthenticationResponse;
 import pet.tasktrackerapi.auth.dto.RegisterRequest;
 import pet.tasktrackerapi.api.model.Role;
 import pet.tasktrackerapi.api.model.User;
+import pet.tasktrackerapi.exception.BadCredentialsException;
 import pet.tasktrackerapi.repository.UserRepository;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -63,4 +65,13 @@ public class AuthenticationService {
         return userRepository.existsByUsername(username);
     }
 
+    public boolean isCredentialsValid(AuthenticationRequest authenticationRequest) {
+
+        String reqUsername = authenticationRequest.getUsername();
+        String reqPassword = authenticationRequest.getPassword();
+        String dbPassword = userRepository.findByUsername(reqUsername)
+                .orElseThrow((Supplier<BadCredentialsException>) BadCredentialsException::new).getPassword();
+
+        return passwordEncoder.matches(reqPassword, dbPassword);
+    }
 }

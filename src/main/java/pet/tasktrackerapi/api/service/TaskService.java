@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
+import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
 import pet.tasktrackerapi.api.model.Task;
 import pet.tasktrackerapi.api.model.User;
@@ -32,11 +33,11 @@ public class TaskService {
         }
     }
 
-    public UUID createTask(User user, TaskDto taskDto){
+    public UUID createTask(User user, NewTaskRequest newTaskRequest){
         Task newTask = Task
                 .builder()
-                .title(taskDto.getTitle())
-                .details(taskDto.getDetails())
+                .title(newTaskRequest.getTitle())
+                .details(newTaskRequest.getDetails())
                 .completed(false)
                 .user(user)
                 .build();
@@ -57,9 +58,5 @@ public class TaskService {
         } else {
             throw new NotFoundException("No task with such id");
         }
-    }
-
-    public int countNonCompletedTasks(User user) {
-        return taskRepository.countTasksByUserAndCompletedIsFalse(user.getId());
     }
 }

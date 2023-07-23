@@ -16,6 +16,4 @@ public interface TaskRepository extends JpaRepository<Task, UUID> {
     void deleteTaskById(UUID taskId);
 
     boolean existsByUserAndId(User user, UUID taskId);
-
-    int countTasksByUserAndCompletedIsFalse(Long id);
 }

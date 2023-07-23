@@ -12,6 +12,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
     Boolean existsByUsername(String username);
-
-    int countTasksByUserAndCompletedIsFalse(Long userId, boolean completed);
 }

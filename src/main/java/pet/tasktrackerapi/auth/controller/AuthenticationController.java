@@ -35,9 +35,19 @@ public class AuthenticationController {
                                     value = "{\n" +
                                             "    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleGFtcGxlIiwiaWF0IjoxNjgzMDc2MzUwLCJleHAiOjE2ODMwNzc3OTB9.gg4XpZ7HMqSbCjV4eBw7Wluoe2D23goB68D9gxG-ntM\"\n" +
                                             "}"))),
-    })
+            @ApiResponse(responseCode = "409",
+                    description = "Responds with an Conflict error if username is taken",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                    {
+                                                        "message": "This username is already taken!"
+                                                    }
+                                                    """ )}))})
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) {
-        if (authenticationService.userExists(registerRequest.getUsername())){
+        if (authenticationService.userExists(registerRequest.getUsername())) {
             throw new UserExistsException();
         }
         return ResponseEntity.ok(authenticationService.register(registerRequest));
@@ -52,9 +62,20 @@ public class AuthenticationController {
                                     value = "{\n" +
                                             "    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleGFtcGxlIiwiaWF0IjoxNjgzMDc2MzUwLCJleHAiOjE2ODMwNzc3OTB9.gg4XpZ7HMqSbCjV4eBw7Wluoe2D23goB68D9gxG-ntM\"\n" +
                                             "}"))),
-    })
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Responds with an Unauthorized error if username/password is invalid",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(
+                                            value = """
+                                                            {
+                                                                "message": "Bad credentials!"
+                                                            }
+                                                            """ )}))})
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        if (!authenticationService.userExists(authenticationRequest.getUsername())){
+        if (!authenticationService.userExists(authenticationRequest.getUsername())) {
             throw new BadCredentialsException();
         }
         return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
