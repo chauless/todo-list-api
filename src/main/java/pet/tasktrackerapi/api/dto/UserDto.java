@@ -10,7 +10,6 @@ import java.util.List;
 
 @Data
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 @Schema(description = "Information about User")
 public class UserDto implements Serializable {
 

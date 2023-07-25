@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
 @Schema(description = "Information about Task")
 public class TaskDto implements Serializable {
 

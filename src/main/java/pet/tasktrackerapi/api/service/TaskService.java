@@ -3,6 +3,7 @@ package pet.tasktrackerapi.api.service;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
@@ -25,14 +26,6 @@ public class TaskService {
         return tasks.stream().map(task -> modelMapper.map(task, TaskDto.class)).toList();
     }
 
-    public void deleteTask(User user, UUID uuid){
-        if (taskRepository.existsByUserAndId(user, uuid)){
-            taskRepository.deleteTaskById(uuid);
-        } else {
-            throw new NotFoundException("No task with such id");
-        }
-    }
-
     public UUID createTask(User user, NewTaskRequest newTaskRequest){
         Task newTask = Task
                 .builder()
@@ -44,10 +37,10 @@ public class TaskService {
         return taskRepository.save(newTask).getId();
     }
 
+    @Transactional
     public UUID updateTask(User user, TaskDto taskDto) {
         if (taskRepository.existsByUserAndId(user, taskDto.getId())){
-            Task task = Task
-                    .builder()
+            Task task = Task.builder()
                     .id(taskDto.getId())
                     .title(taskDto.getTitle())
                     .details(taskDto.getDetails())
@@ -55,6 +48,15 @@ public class TaskService {
                     .user(user)
                     .build();
             return taskRepository.save(task).getId();
+        } else {
+            throw new NotFoundException("No task with such id");
+        }
+    }
+
+    @Transactional
+    public void deleteTask(User user, UUID uuid){
+        if (taskRepository.existsByUserAndId(user, uuid)){
+            taskRepository.deleteTaskById(uuid);
         } else {
             throw new NotFoundException("No task with such id");
         }

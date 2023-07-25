@@ -50,7 +50,7 @@ public class TaskController {
     }
 
     @DeleteMapping(path = "/{uuid}")
-    @Operation(description = "Deleting task by id")
+    @Operation(description = "Deleting task by uuid")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<UUID> deleteTask(@AuthenticationPrincipal User user,
                                            @PathVariable UUID uuid) {

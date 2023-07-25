@@ -5,15 +5,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pet.tasktrackerapi.api.model.Role;
+import pet.tasktrackerapi.api.model.User;
 import pet.tasktrackerapi.auth.dto.AuthenticationRequest;
 import pet.tasktrackerapi.auth.dto.AuthenticationResponse;
 import pet.tasktrackerapi.auth.dto.RegisterRequest;
-import pet.tasktrackerapi.api.model.Role;
-import pet.tasktrackerapi.api.model.User;
 import pet.tasktrackerapi.exception.BadCredentialsException;
 import pet.tasktrackerapi.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.function.Supplier;
 
 @Service
@@ -26,19 +25,16 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
-        User user = User.
-                builder()
+        User user = User.builder()
                 .username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(Role.USER)
-                .tasks(new ArrayList<>())
                 .build();
 
         userRepository.save(user);
 
         String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse
-                .builder()
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
@@ -51,18 +47,17 @@ public class AuthenticationService {
                 )
         );
 
-        User user = userRepository.findByUsername(authenticationRequest.getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(authenticationRequest.getUsername()).get();
 
         String jwtToken = jwtService.generateToken(user);
 
-        return AuthenticationResponse
-                .builder()
+        return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
     public boolean userExists(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsUserByUsername(username);
     }
 
     public boolean isCredentialsValid(AuthenticationRequest authenticationRequest) {

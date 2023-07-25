@@ -15,10 +15,10 @@ import lombok.NoArgsConstructor;
 public class AuthenticationRequest {
 
     @NotBlank
-    @Schema(description = "The username", example = "johndoe")
+    @Schema(description = "The username", example = "test")
     private String username;
 
     @NotBlank
-    @Schema(description = "The password, BCrypt encoded", example = "password")
+    @Schema(description = "The password, BCrypt encoded", example = "test")
     private String password;
 }

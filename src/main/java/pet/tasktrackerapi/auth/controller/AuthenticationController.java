@@ -1,10 +1,12 @@
 package pet.tasktrackerapi.auth.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import pet.tasktrackerapi.auth.dto.RegisterRequest;
 import pet.tasktrackerapi.auth.service.AuthenticationService;
 import pet.tasktrackerapi.exception.BadCredentialsException;
 import pet.tasktrackerapi.exception.UserExistsException;
+import pet.tasktrackerapi.rabbitmq.producer.RabbitMessageSender;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -25,6 +28,7 @@ import pet.tasktrackerapi.exception.UserExistsException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final RabbitMessageSender rabbitMessageSender;
 
     @PostMapping("/register")
     @Operation(description = "Registration of a new user", responses = {
@@ -46,11 +50,15 @@ public class AuthenticationController {
                                                         "message": "This username is already taken!"
                                                     }
                                                     """ )}))})
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest) {
-        if (authenticationService.userExists(registerRequest.getUsername())) {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest registerRequest) throws JsonProcessingException {
+        if (authenticationService.userExists(registerRequest.getUsername())){
             throw new UserExistsException();
         }
-        return ResponseEntity.ok(authenticationService.register(registerRequest));
+
+        AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
+//        rabbitMessageSender.sendWelcomeEmail(registerRequest.getUsername());
+
+        return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping(value = "/authenticate")
@@ -74,8 +82,8 @@ public class AuthenticationController {
                                                                 "message": "Bad credentials!"
                                                             }
                                                             """ )}))})
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        if (!authenticationService.userExists(authenticationRequest.getUsername())) {
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
+        if (!authenticationService.isCredentialsValid(authenticationRequest)) {
             throw new BadCredentialsException();
         }
         return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
