@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
+
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
 import pet.tasktrackerapi.api.model.Task;
 import pet.tasktrackerapi.api.model.User;
+import pet.tasktrackerapi.exception.NotFoundException;
 import pet.tasktrackerapi.repository.TaskRepository;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class TaskService {
                     .build();
             return taskRepository.save(task).getId();
         } else {
-            throw new NotFoundException("No task with such id");
+            throw new NotFoundException();
         }
     }
 
@@ -58,7 +59,7 @@ public class TaskService {
         if (taskRepository.existsByUserAndId(user, uuid)){
             taskRepository.deleteTaskById(uuid);
         } else {
-            throw new NotFoundException("No task with such id");
+            throw new NotFoundException();
         }
     }
 }

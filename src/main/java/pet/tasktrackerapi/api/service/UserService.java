@@ -18,4 +18,8 @@ public class UserService {
         User userEntity = userRepository.findById(user.getId()).orElseThrow();
         return modelMapper.map(userEntity, UserDto.class);
     }
+
+    public User getUserEntity(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
 }
