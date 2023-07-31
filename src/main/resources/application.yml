@@ -26,4 +26,7 @@ application:
       secret-key: XaGuAh8iCdF7UEEKsukI9PhK1VLE1wrT5YzLlP0UzdA
       expiration: 86400000
 
-
+springdoc:
+  swagger-ui:
+    operations-sorter: alpha
+    tags-sorter: alpha

@@ -56,7 +56,7 @@ public class AuthenticationController {
         }
 
         AuthenticationResponse authenticationResponse = authenticationService.register(registerRequest);
-//        rabbitMessageSender.sendWelcomeEmail(registerRequest.getUsername());
+        rabbitMessageSender.sendWelcomeEmail(registerRequest.getUsername());
 
         return ResponseEntity.ok(authenticationResponse);
     }

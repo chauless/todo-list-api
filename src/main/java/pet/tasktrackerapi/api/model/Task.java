@@ -2,7 +2,10 @@ package pet.tasktrackerapi.api.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -29,4 +32,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+
+    @Column(nullable = true)
+    private Timestamp completedAt;
 }

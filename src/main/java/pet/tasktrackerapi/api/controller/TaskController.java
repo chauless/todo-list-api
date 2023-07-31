@@ -43,10 +43,10 @@ public class TaskController {
     @PutMapping(path = "/{uuid}")
     @Operation(description = "Updating task")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<UUID> updateTask(@AuthenticationPrincipal User user,
+    public ResponseEntity<TaskDto> updateTask(@AuthenticationPrincipal User user,
                                            @RequestBody @Valid TaskDto taskDto) {
-        UUID taskId = taskService.updateTask(user, taskDto);
-        return ResponseEntity.ok(taskId);
+        taskService.updateTask(user, taskDto);
+        return ResponseEntity.ok(taskDto);
     }
 
     @DeleteMapping(path = "/{uuid}")
