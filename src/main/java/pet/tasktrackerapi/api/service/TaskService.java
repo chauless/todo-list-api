@@ -2,9 +2,11 @@ package pet.tasktrackerapi.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
 import pet.tasktrackerapi.api.model.Task;
@@ -24,11 +26,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ModelMapper modelMapper;
 
+    @Cacheable(value = "tasks", key = "#user.id")
     public List<TaskDto> getUserTasks(User user) {
         List<Task> tasks = taskRepository.getTasksByUser_Id(user.getId());
         return tasks.stream().map(task -> modelMapper.map(task, TaskDto.class)).toList();
     }
 
+    @CachePut(value = "tasks", key = "#result")
     public UUID createTask(User user, NewTaskRequest newTaskRequest){
         Task newTask = Task
                 .builder()
@@ -41,6 +45,7 @@ public class TaskService {
     }
 
     @Transactional
+    @CacheEvict(value = "tasks", key = "#uuid")
     public void deleteTask(User user, UUID uuid){
         if (taskRepository.existsByUserAndId(user, uuid)){
             taskRepository.deleteTaskById(uuid);
@@ -50,6 +55,7 @@ public class TaskService {
     }
 
     @Transactional
+    @CachePut(value = "tasks", key = "#user.id")
     public void updateTask(User user, TaskDto taskDto) {
         if (!taskRepository.existsByUserAndId(user, taskDto.getId())){
             throw new NotFoundException();

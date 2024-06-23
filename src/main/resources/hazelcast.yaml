@@ -1,0 +1,14 @@
+hazelcast:
+  network:
+    join:
+      multicast:
+        enabled: false
+      kubernetes:
+        enabled: true
+        property:
+          # service-name: hazelcast-service
+  map:
+    tasks:
+      backup-count: 1
+    users:
+      backup-count: 1
