@@ -1,7 +1,6 @@
 package pet.tasktrackerapi.api.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class TaskService {
 
@@ -29,8 +27,9 @@ public class TaskService {
 
     @Cacheable("tasks")
     public List<TaskDto> getUserTasks(User user) {
+        // Simulate a slow query
         try {
-            Thread.sleep(4000);
+            Thread.sleep(2500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -50,8 +49,6 @@ public class TaskService {
                 .user(user)
                 .build();
         return taskRepository.save(newTask);
-
-        //return modelMapper.map(newTask, TaskDto.class);
     }
 
     @Transactional
@@ -85,9 +82,6 @@ public class TaskService {
         }
 
         return taskRepository.findById(taskDto.getId()).get();
-
-//        List<Task> tasks = taskRepository.getTasksByUser_Id(user.getId());
-//        return tasks.stream().map(task-> modelMapper.map(task, TaskDto.class)).toList();
     }
 
     protected void updateUncompletedTask(TaskDto task){
