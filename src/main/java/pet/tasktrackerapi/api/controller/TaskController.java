@@ -10,11 +10,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
+import pet.tasktrackerapi.api.model.Task;
 import pet.tasktrackerapi.api.model.User;
 import pet.tasktrackerapi.api.service.TaskService;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -34,13 +34,13 @@ public class TaskController {
     @PostMapping
     @Operation(description = "Creating new task")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<UUID> createTask(@AuthenticationPrincipal User user,
+    public ResponseEntity<Long> createTask(@AuthenticationPrincipal User user,
                                            @RequestBody @Valid NewTaskRequest newTaskRequest) {
-        UUID taskId = taskService.createTask(user, newTaskRequest);
-        return ResponseEntity.ok(taskId);
+        Task task = taskService.createTask(user, newTaskRequest);
+        return ResponseEntity.ok(task.getId());
     }
 
-    @PutMapping(path = "/{uuid}")
+    @PutMapping(path = "/{id}")
     @Operation(description = "Updating task")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<TaskDto> updateTask(@AuthenticationPrincipal User user,
@@ -49,12 +49,12 @@ public class TaskController {
         return ResponseEntity.ok(taskDto);
     }
 
-    @DeleteMapping(path = "/{uuid}")
+    @DeleteMapping(path = "/{id}")
     @Operation(description = "Deleting task by uuid")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<UUID> deleteTask(@AuthenticationPrincipal User user,
-                                           @PathVariable UUID uuid) {
-        taskService.deleteTask(user, uuid);
-        return ResponseEntity.ok(uuid);
+    public ResponseEntity<Long> deleteTask(@AuthenticationPrincipal User user,
+                                           @PathVariable Long id) {
+        taskService.deleteTask(user, id);
+        return ResponseEntity.ok(id);
     }
 }

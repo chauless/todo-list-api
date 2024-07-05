@@ -11,27 +11,26 @@ import pet.tasktrackerapi.api.model.User;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.UUID;
 
 @Repository
-public interface TaskRepository extends JpaRepository<Task, UUID> {
+public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> getTasksByUser_Id(Long userId);
 
-    void deleteTaskById(UUID taskId);
+    void deleteTaskById(Long taskId);
 
-    boolean existsByUserAndId(User user, UUID taskId);
+    boolean existsByUserAndId(User user, Long taskId);
 
     @Transactional
     @Modifying
     @Query("UPDATE Task t SET t.title = :title, t.details = :details, t.completed = :completed, t.completedAt = :completedAt WHERE t.id = :id")
-    void update(@Param("id") UUID uuid, @Param("title") String title, @Param("details") String details,
+    void update(@Param("id") Long id, @Param("title") String title, @Param("details") String details,
                 @Param("completed") boolean completed, @Param("completedAt") Timestamp completedAt);
 
 
     @Transactional
     @Modifying
     @Query("UPDATE Task t SET t.title = :title, t.details = :details WHERE t.id = :id")
-    void updateCompleted(@Param("id") UUID uuid, @Param("title") String title, @Param("details") String details);
+    void updateCompleted(@Param("id") Long id, @Param("title") String title, @Param("details") String details);
 
 }

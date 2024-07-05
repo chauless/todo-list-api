@@ -1,10 +1,11 @@
 package pet.tasktrackerapi.api.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
@@ -17,23 +18,30 @@ import pet.tasktrackerapi.repository.TaskRepository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class TaskService {
 
     private final TaskRepository taskRepository;
     private final ModelMapper modelMapper;
 
-    @Cacheable(value = "tasks", key = "#user.id")
+    @Cacheable("tasks")
     public List<TaskDto> getUserTasks(User user) {
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         List<Task> tasks = taskRepository.getTasksByUser_Id(user.getId());
         return tasks.stream().map(task -> modelMapper.map(task, TaskDto.class)).toList();
     }
 
-    @CachePut(value = "tasks", key = "#result")
-    public UUID createTask(User user, NewTaskRequest newTaskRequest){
+    @Caching(evict = {
+            @CacheEvict(value="task", allEntries=true),
+            @CacheEvict(value="tasks", allEntries=true)})
+    public Task createTask(User user, NewTaskRequest newTaskRequest){
         Task newTask = Task
                 .builder()
                 .title(newTaskRequest.getTitle())
@@ -41,34 +49,45 @@ public class TaskService {
                 .completed(false)
                 .user(user)
                 .build();
-        return taskRepository.save(newTask).getId();
+        return taskRepository.save(newTask);
+
+        //return modelMapper.map(newTask, TaskDto.class);
     }
 
     @Transactional
-    @CacheEvict(value = "tasks", key = "#uuid")
-    public void deleteTask(User user, UUID uuid){
-        if (taskRepository.existsByUserAndId(user, uuid)){
-            taskRepository.deleteTaskById(uuid);
+    @Caching(evict = {
+            @CacheEvict(value="task", allEntries=true),
+            @CacheEvict(value="tasks", allEntries=true)})
+    public void deleteTask(User user, Long id){
+        if (taskRepository.existsByUserAndId(user, id)){
+            taskRepository.deleteTaskById(id);
         } else {
             throw new NotFoundException();
         }
     }
 
     @Transactional
-    @CachePut(value = "tasks", key = "#user.id")
-    public void updateTask(User user, TaskDto taskDto) {
+    @Caching(evict = {
+            @CacheEvict(value="task", allEntries=true),
+            @CacheEvict(value="tasks", allEntries=true)})
+    public Task updateTask(User user, TaskDto taskDto) {
         if (!taskRepository.existsByUserAndId(user, taskDto.getId())){
             throw new NotFoundException();
         }
 
-        Task task = taskRepository.findById(taskDto.getId()).get();
-        if ((taskDto.getCompleted() && !task.getCompleted())){
+        Task taskToUpdate = taskRepository.findById(taskDto.getId()).get();
+        if ((taskDto.getCompleted() && !taskToUpdate.getCompleted())){
             completeTask(taskDto);
         } else if (taskDto.getCompleted()){
             updateCompletedTask(taskDto);
         } else {
             updateUncompletedTask(taskDto);
         }
+
+        return taskRepository.findById(taskDto.getId()).get();
+
+//        List<Task> tasks = taskRepository.getTasksByUser_Id(user.getId());
+//        return tasks.stream().map(task-> modelMapper.map(task, TaskDto.class)).toList();
     }
 
     protected void updateUncompletedTask(TaskDto task){
