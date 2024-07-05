@@ -12,7 +12,7 @@ import pet.tasktrackerapi.api.model.User;
 import pet.tasktrackerapi.exception.NotFoundException;
 import pet.tasktrackerapi.repository.TaskRepository;
 
-import java.util.UUID;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,6 +28,8 @@ public class TaskServiceTest {
     private ModelMapper modelMapper;
     private TaskService taskService;
 
+    private final Random random = new Random();
+
     @BeforeEach
     void setUp() {
         taskService = new TaskService(taskRepository, modelMapper);
@@ -42,13 +44,13 @@ public class TaskServiceTest {
         newTaskRequest.setDetails("Test Details");
 
         Task task = new Task();
-        UUID taskId = UUID.randomUUID();
+        Long taskId = random.nextLong();
         task.setId(taskId);
 
         when(taskRepository.save(any(Task.class))).thenReturn(task);
-        UUID result = taskService.createTask(user, newTaskRequest);
+        Task result = taskService.createTask(user, newTaskRequest);
 
-        assertEquals(taskId, result);
+        assertEquals(taskId, result.getId());
     }
 
     @Test
@@ -56,7 +58,7 @@ public class TaskServiceTest {
         User user = new User();
         user.setId(1L);
 
-        UUID taskId = UUID.randomUUID();
+        Long taskId = random.nextLong();
 
         when(taskRepository.existsByUserAndId(user, taskId)).thenReturn(false);
 
@@ -69,7 +71,7 @@ public class TaskServiceTest {
         User user = new User();
         user.setId(1L);
 
-        UUID taskId = UUID.randomUUID();
+        Long taskId = random.nextLong();
 
         when(taskRepository.existsByUserAndId(user, taskId)).thenReturn(true);
         taskService.deleteTask(user, taskId);
