@@ -131,6 +131,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<mainClass>pet.tasktrackerapi.TaskTrackerApiApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
