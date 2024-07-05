@@ -1,11 +1,10 @@
 package pet.tasktrackerapi.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
@@ -14,11 +13,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Task {
+public class Task implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -30,7 +29,6 @@ public class Task {
     private Boolean completed;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
     private User user;
 
     @Column(nullable = true)
