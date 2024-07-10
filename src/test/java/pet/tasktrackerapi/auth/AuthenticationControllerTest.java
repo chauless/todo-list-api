@@ -44,9 +44,10 @@ class AuthenticationControllerTest {
     @Test
     void testRegisterSuccessful() throws Exception {
 
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("testuser");
-        registerRequest.setPassword("testpassword");
+        RegisterRequest registerRequest = new RegisterRequest.Builder()
+                .username("testuser")
+                .password("testpassword")
+                .build();
 
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
         authenticationResponse.setToken("test_token");
@@ -65,9 +66,10 @@ class AuthenticationControllerTest {
     @Test
     void testRegisterUserExists() throws Exception {
         // Given
-        RegisterRequest registerRequest = new RegisterRequest();
-        registerRequest.setUsername("existinguser");
-        registerRequest.setPassword("testpassword");
+        RegisterRequest registerRequest = new RegisterRequest.Builder()
+                .username("existinguser")
+                .password("testpassword")
+                .build();
 
         // When
         when(authenticationService.userExists("existinguser")).thenReturn(true);
