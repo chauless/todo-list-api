@@ -86,6 +86,6 @@ public class AuthenticationController {
         if (!authenticationService.isCredentialsValid(authenticationRequest)) {
             throw new BadCredentialsException();
         }
-        return ResponseEntity.ok(authenticationService.authenticate(authenticationRequest));
+        return ResponseEntity.ok(authenticationService.authenticateUser(authenticationRequest));
     }
 }

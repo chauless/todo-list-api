@@ -16,13 +16,12 @@ import pet.tasktrackerapi.repository.UserRepository;
 import java.util.function.Supplier;
 
 @Service
-@RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService extends AbstractAuthenticationService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                                 JwtService jwtService, AuthenticationManager authenticationManager) {
+        super(userRepository, passwordEncoder, jwtService, authenticationManager);
+    }
 
     public AuthenticationResponse register(RegisterRequest registerRequest) {
         User user = User.builder()
@@ -32,28 +31,17 @@ public class AuthenticationService {
                 .build();
 
         userRepository.save(user);
-
-        String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+        return generateAuthResponse(user);
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
+    @Override
+    protected void validateCredentials(AuthenticationRequest authenticationRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getUsername(),
                         authenticationRequest.getPassword()
                 )
         );
-
-        User user = userRepository.findByUsername(authenticationRequest.getUsername()).get();
-
-        String jwtToken = jwtService.generateToken(user);
-
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
     }
 
     public boolean userExists(String username) {
@@ -61,7 +49,6 @@ public class AuthenticationService {
     }
 
     public boolean isCredentialsValid(AuthenticationRequest authenticationRequest) {
-
         String reqUsername = authenticationRequest.getUsername();
         String reqPassword = authenticationRequest.getPassword();
         String dbPassword = userRepository.findByUsername(reqUsername)
@@ -70,3 +57,4 @@ public class AuthenticationService {
         return passwordEncoder.matches(reqPassword, dbPassword);
     }
 }
+

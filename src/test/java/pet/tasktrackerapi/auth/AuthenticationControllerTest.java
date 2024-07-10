@@ -90,7 +90,7 @@ class AuthenticationControllerTest {
 
         // When
         when(authenticationService.isCredentialsValid(authenticationRequest)).thenReturn(true);
-        when(authenticationService.authenticate(any(AuthenticationRequest.class))).thenReturn(authenticationResponse);
+        when(authenticationService.authenticateUser(any(AuthenticationRequest.class))).thenReturn(authenticationResponse);
 
         ResponseEntity<AuthenticationResponse> response = authenticationController.authenticate(authenticationRequest);
 
