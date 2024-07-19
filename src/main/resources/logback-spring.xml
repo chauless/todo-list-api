@@ -1,10 +1,9 @@
 <configuration>
-    <appender name="ELASTIC" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5044</destination> <!-- Adjust the host and port according to your Elasticsearch setup -->
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    <appender name="FLUENTD" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>fluentd:24224</destination> <!-- Ensure Fluentd's hostname is correct -->
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
-
     <root level="info">
-        <appender-ref ref="ELASTIC" />
+        <appender-ref ref="FLUENTD"/>
     </root>
 </configuration>
