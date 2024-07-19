@@ -1,5 +1,10 @@
+---
 hazelcast:
   network:
     join:
       multicast:
+        enabled: false
+      kubernetes:
         enabled: true
+        namespace: application
+        service-name: hazelcast
