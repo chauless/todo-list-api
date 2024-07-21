@@ -1,25 +1,29 @@
 package pet.tasktrackerapi.api.service;
 
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 import pet.tasktrackerapi.api.dto.UserDto;
 import pet.tasktrackerapi.api.model.User;
-import pet.tasktrackerapi.repository.UserRepository;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
+import java.util.NoSuchElementException;
 
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+public interface UserService {
+    /**
+     * Fetches the user information based on the provided User object.
+     * It first retrieves the User entity from the database using the User's id.
+     * Then, it maps the User entity to a UserDto object using ModelMapper and returns it.
+     *
+     * @param user The User object which contains the id of the user to be fetched.
+     * @return UserDto The DTO object of the user.
+     * @throws NoSuchElementException if no user is found with the provided id.
+     */
+    UserDto getUserInfo(User user);
 
-    public UserDto getUserInfo(User user){
-        User userEntity = userRepository.findById(user.getId()).orElseThrow();
-        return modelMapper.map(userEntity, UserDto.class);
-    }
-
-    public User getUserEntity(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-    }
+    /**
+     * Fetches the User entity based on the provided id.
+     * It retrieves the User entity from the database using the provided id.
+     *
+     * @param id The id of the user to be fetched.
+     * @return User The User entity.
+     * @throws RuntimeException if no user is found with the provided id.
+     */
+    User getUserEntity(Long id);
 }
