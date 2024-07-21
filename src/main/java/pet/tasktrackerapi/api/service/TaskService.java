@@ -1,99 +1,48 @@
 package pet.tasktrackerapi.api.service;
 
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import pet.tasktrackerapi.api.dto.NewTaskRequest;
 import pet.tasktrackerapi.api.dto.TaskDto;
 import pet.tasktrackerapi.api.model.Task;
 import pet.tasktrackerapi.api.model.User;
-import pet.tasktrackerapi.exception.NotFoundException;
-import pet.tasktrackerapi.repository.TaskRepository;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class TaskService {
+public interface TaskService {
+    /**
+     * Retrieves a list of tasks for a specific user.
+     * The result is cached for performance optimization.
+     *
+     * @param user The user whose tasks are to be retrieved.
+     * @return A list of TaskDto objects.
+     */
+    List<TaskDto> getUserTasks(User user);
 
-    private final TaskRepository taskRepository;
-    private final ModelMapper modelMapper;
+    /**
+     * Creates a new task for a specific user.
+     * The cache is evicted after the operation to ensure data consistency.
+     *
+     * @param user The user for whom the task is to be created.
+     * @param newTaskRequest The request object containing the task details.
+     * @return The created Task object.
+     */
+    Task createTask(User user, NewTaskRequest newTaskRequest);
 
-    @Cacheable("tasks")
-    public List<TaskDto> getUserTasks(User user) {
-        // Simulate a slow query
-        try {
-            Thread.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        List<Task> tasks = taskRepository.getTasksByUser_Id(user.getId());
-        return tasks.stream().map(task -> modelMapper.map(task, TaskDto.class)).toList();
-    }
+    /**
+     * Deletes a task for a specific user.
+     * The cache is evicted after the operation to ensure data consistency.
+     *
+     * @param user The user for whom the task is to be deleted.
+     * @param id The id of the task to be deleted.
+     */
+    void deleteTask(User user, Long id);
 
-    @Caching(evict = {
-            @CacheEvict(value="task", allEntries=true),
-            @CacheEvict(value="tasks", allEntries=true)})
-    public Task createTask(User user, NewTaskRequest newTaskRequest){
-        Task newTask = Task
-                .builder()
-                .title(newTaskRequest.getTitle())
-                .details(newTaskRequest.getDetails())
-                .completed(false)
-                .user(user)
-                .build();
-        return taskRepository.save(newTask);
-    }
-
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value="task", allEntries=true),
-            @CacheEvict(value="tasks", allEntries=true)})
-    public void deleteTask(User user, Long id){
-        if (taskRepository.existsByUserAndId(user, id)){
-            taskRepository.deleteTaskById(id);
-        } else {
-            throw new NotFoundException();
-        }
-    }
-
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value="task", allEntries=true),
-            @CacheEvict(value="tasks", allEntries=true)})
-    public Task updateTask(User user, TaskDto taskDto) {
-        if (!taskRepository.existsByUserAndId(user, taskDto.getId())){
-            throw new NotFoundException();
-        }
-
-        Task taskToUpdate = taskRepository.findById(taskDto.getId()).get();
-        if ((taskDto.getCompleted() && !taskToUpdate.getCompleted())){
-            completeTask(taskDto);
-        } else if (taskDto.getCompleted()){
-            updateCompletedTask(taskDto);
-        } else {
-            updateUncompletedTask(taskDto);
-        }
-
-        return taskRepository.findById(taskDto.getId()).get();
-    }
-
-    protected void updateUncompletedTask(TaskDto task){
-        taskRepository.update(task.getId(), task.getTitle(), task.getDetails(), task.getCompleted(), null);
-    }
-
-    protected void completeTask(TaskDto task){
-        taskRepository.update(task.getId(), task.getTitle(), task.getDetails(), task.getCompleted(),
-                Timestamp.valueOf(LocalDateTime.now()));
-    }
-
-    protected void updateCompletedTask(TaskDto task){
-        taskRepository.updateCompleted(task.getId(), task.getTitle(), task.getDetails());
-    }
+    /**
+     * Updates a task for a specific user.
+     * The cache is evicted after the operation to ensure data consistency.
+     *
+     * @param user The user for whom the task is to be updated.
+     * @param taskDto The DTO object containing the updated task details.
+     * @return The updated Task object.
+     */
+    Task updateTask(User user, TaskDto taskDto);
 }

@@ -32,7 +32,7 @@ public class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        taskService = new TaskService(taskRepository, modelMapper);
+        taskService = new TaskServiceImpl(taskRepository, modelMapper);
     }
 
     @Test
