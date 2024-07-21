@@ -1,6 +1,6 @@
 <configuration>
     <appender name="FLUENTD" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>fluentd:24224</destination> <!-- Ensure Fluentd's hostname is correct -->
+        <destination>fluentd.application.svc.cluster.local:24224</destination>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
     <root level="info">
